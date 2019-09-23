@@ -12,7 +12,7 @@ use yii\widgets\Pjax;
 /* @var $priorities array */
 /* @var $statuses array */
 
-$this->title = 'Tasks';
+$this->title = 'Задачи';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="task-index">
@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Task', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать задачу', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php Pjax::begin(); ?>    
@@ -55,15 +55,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'authorId',
                 'value' => function(app\models\Task $model) {
                     return $model->author->surname.' '.$model->author->name;
-                }
+                },
+                'filter' => $users,
             ],
             [
                 'attribute' => 'executorId',
                 'value' => function(app\models\Task $model) {
                     return $model->executor->surname.' '.$model->executor->name;
-                }
+                },
+                'filter' => $users,
+            ],       
+            [
+                'attribute' => 'status',
+                'value' => function(app\models\Task $model) use ($statuses) {
+                    return $statuses[$model->status];                    
+                },
+                'filter' => $statuses
             ],            
-            'status',
             'name',
             'dateStart',
             'content',

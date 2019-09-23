@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Task;
+use yii\data\Sort;
 
 /**
  * TaskSearch represents the model behind the search form of `app\models\Task`.
@@ -43,9 +44,12 @@ class TaskSearch extends Task
         $query = Task::find();
 
         // add conditions that should always apply here
+        
+        $sort = new Sort(['defaultOrder' => ['id' => SORT_DESC]]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => $sort,
         ]);
 
         $this->load($params);

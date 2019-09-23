@@ -62,6 +62,11 @@ class TaskController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'projects' => Project::getList(),
+            'types' => TaskType::getList(),
+            'users' => User::getList(),
+            'priorities' => Task::getPriorityList(),
+            'statuses' => Task::getStatusList()
         ]);
     }
 
@@ -107,6 +112,11 @@ class TaskController extends Controller
 
         return $this->render('form', [
             'model' => $model,
+            'projects' => Project::getList(),
+            'types' => TaskType::getList(),
+            'users' => User::getList(),
+            'priorities' => Task::getPriorityList(),
+            'statuses' => Task::getStatusList()
         ]);
     }
 

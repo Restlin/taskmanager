@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\jui\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Task */
@@ -37,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $form->field($model, 'content')->textArea(['maxlength' => 4000]) ?>        
 
-        <?= $form->field($model, 'dateLimit')->textInput() ?>
+        <?= $form->field($model, 'dateLimit')->widget(DatePicker::class, ['language' => 'ru', 'dateFormat' => 'yyyy-MM-dd']) ?>
 
         <div class="form-group">
             <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

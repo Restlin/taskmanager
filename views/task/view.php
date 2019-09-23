@@ -5,22 +5,27 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Task */
+/* @var $projects array */
+/* @var $types array */
+/* @var $users array */
+/* @var $priorities array */
+/* @var $statuses array */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Tasks', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Задачи', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="task-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1>Задача: <?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => 'Вы уверены, что хотите удалить задачу?',
                 'method' => 'post',
             ],
         ]) ?>
@@ -29,13 +34,30 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'projectId',
-            'typeId',
-            'priority',
-            'authorId',
-            'executorId',
-            'status',
+            [
+                'attribute' => 'projectId',
+                'value' => $model->project->name,
+            ],
+            [
+                'attribute' => 'typeId',
+                'value' => $model->type->name,
+            ],
+            [
+                'attribute' => 'priority',
+                'value' => $priorities[$model->priority],
+            ],            
+            [
+                'attribute' => 'authorId',
+                'value' => $model->author->surname.' '.$model->author->name,
+            ],
+            [
+                'attribute' => 'executorId',
+                'value' => $model->executor->surname.' '.$model->executor->name,
+            ],
+            [
+                'attribute' => 'status',
+                'value' => $statuses[$model->status],
+            ],
             'name',
             'dateStart',
             'content',

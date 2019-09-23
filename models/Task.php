@@ -91,10 +91,10 @@ class Task extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'Индетификатор',
+            'id' => 'Код',
             'projectId' => 'Проект',
             'typeId' => 'Тип',
-            'priority' => 'приоритет',
+            'priority' => 'Приоритет',
             'authorId' => 'Автор',
             'executorId' => 'Исполнитель',
             'status' => 'Статус',
