@@ -50,17 +50,5 @@ class TaskType extends \yii\db\ActiveRecord
     public function getTasks()
     {        
         return $this->hasMany(Task::className(), ['typeId' => 'id']);
-    }
-    /**
-     * Получить массив проектов в формате [id => name]
-     * @return array
-     */
-    public static function getList(): array {
-        $list = [];
-        $models = TaskType::find()->orderBy('id')->all();
-        foreach($models as $model) {
-            $list[$model->id] = $model->name;
-        }
-        return $list;
-    }
+    }    
 }

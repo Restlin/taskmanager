@@ -47,12 +47,12 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function attributeLabels()
     {
         return [
-            'id' => 'идентификатор',
-            'email' => 'адрес email',
-            'password' => 'пароль',
-            'surname' => 'фамилия',
-            'name' => 'имя',
-            'patronymic' => 'отчество',
+            'id' => 'Код',
+            'email' => 'Email',
+            'password' => 'Пароль',
+            'surname' => 'Фамилия',
+            'name' => 'Имя',
+            'patronymic' => 'Отчество',
         ];
     }
 
@@ -121,17 +121,6 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function validatePassword($password)
     {
         return $this->password === $password;
-    }
-    /**
-     * Получить массив проектов в формате [id => name]
-     * @return array
-     */
-    public static function getList(): array {
-        $list = [];
-        $models = User::find()->orderBy('surname, name')->all();
-        foreach($models as $model) {
-            $list[$model->id] = $model->name.' '.$model->surname;
-        }
-        return $list;
-    }
+    }    
+    
 }

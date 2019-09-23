@@ -42,6 +42,7 @@ class TaskSearch extends Task
     public function search($params)
     {
         $query = Task::find();
+        $query->with(['project', 'type', 'author', 'executor']);
 
         // add conditions that should always apply here
         

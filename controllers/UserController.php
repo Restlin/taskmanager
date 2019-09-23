@@ -70,7 +70,7 @@ class UserController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->render('form', [
             'model' => $model,
         ]);
     }
@@ -90,7 +90,7 @@ class UserController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->render('form', [
             'model' => $model,
         ]);
     }

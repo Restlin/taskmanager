@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\repositories\TaskRepository;
 use Yii;
 
 /**
@@ -26,39 +27,7 @@ use Yii;
  * @property TaskType $type тип
  */
 class Task extends \yii\db\ActiveRecord
-{
-    /**
-     * Высокий приоритет
-     */
-    const PRIORITY_HIGH = 3;
-    /**
-     * Средний приоритет
-     */
-    const PRIORITY_NORMAL = 2;
-    /**
-     * Низкий приоритет
-     */
-    const PRIORITY_LOW = 1;
-    /**
-     * Статус в ожидании
-     */
-    const STATUS_WAIT = 0;
-    /**
-     * Статус в работе
-     */
-    const STATUS_WORK = 1;
-    /**
-     * Статус на проверке
-     */
-    const STATUS_READY = 2;
-    /**
-     * Статус выполнен
-     */
-    const STATUS_DONE = 3;
-    /**
-     * Статус отказа
-     */
-    const STATUS_REJECT = 4;
+{    
     /**
      * {@inheritdoc}
      */
@@ -82,6 +51,8 @@ class Task extends \yii\db\ActiveRecord
             [['executorId'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executorId' => 'id']],
             [['projectId'], 'exist', 'skipOnError' => true, 'targetClass' => Project::className(), 'targetAttribute' => ['projectId' => 'id']],
             [['typeId'], 'exist', 'skipOnError' => true, 'targetClass' => TaskType::className(), 'targetAttribute' => ['typeId' => 'id']],
+            [['priority'], 'in', 'range' => array_keys(TaskRepository::getPriorityList())],
+            [['status'], 'in', 'range' => array_keys(TaskRepository::getStatusList())],
         ];
     }
 
@@ -136,29 +107,5 @@ class Task extends \yii\db\ActiveRecord
     public function getType()
     {
         return $this->hasOne(TaskType::className(), ['id' => 'typeId']);
-    }
-    /**
-     * Получить перечень приорететов
-     * @return array
-     */
-    public static function getPriorityList(): array {
-        return [
-            self::PRIORITY_HIGH => 'Высокий', 
-            self::PRIORITY_NORMAL => 'Нормальный', 
-            self::PRIORITY_LOW => 'Низкий'
-        ];
-    }
-    /**
-     * Получить перечень статусов
-     * @return array
-     */
-    public static function getStatusList(): array {
-        return [
-            self::STATUS_WAIT => 'В ожидании',
-            self::STATUS_WORK => 'В работе',
-            self::STATUS_READY => 'На проверке',
-            self::STATUS_DONE => 'Выполнен',
-            self::STATUS_REJECT => 'Отказ',
-        ];
-    }
+    }    
 }

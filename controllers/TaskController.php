@@ -5,9 +5,10 @@ namespace app\controllers;
 use Yii;
 use app\models\Task;
 use app\models\TaskSearch;
-use app\models\Project;
-use app\models\TaskType;
-use app\models\User;
+use app\repositories\UserRepository;
+use app\repositories\TaskRepository;
+use app\repositories\TaskTypeRepository;
+use app\repositories\ProjectRepository;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -44,11 +45,11 @@ class TaskController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'projects' => Project::getList(),
-            'types' => TaskType::getList(),
-            'users' => User::getList(),
-            'priorities' => Task::getPriorityList(),
-            'statuses' => Task::getStatusList()
+            'projects' => ProjectRepository::getList(),
+            'types' => TaskTypeRepository::getList(),
+            'users' => UserRepository::getList(),
+            'priorities' => TaskRepository::getPriorityList(),
+            'statuses' => TaskRepository::getStatusList()
         ]);
     }
 
@@ -62,11 +63,11 @@ class TaskController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'projects' => Project::getList(),
-            'types' => TaskType::getList(),
-            'users' => User::getList(),
-            'priorities' => Task::getPriorityList(),
-            'statuses' => Task::getStatusList()
+            'projects' => ProjectRepository::getList(),
+            'types' => TaskTypeRepository::getList(),
+            'users' => UserRepository::getList(),
+            'priorities' => TaskRepository::getPriorityList(),
+            'statuses' => TaskRepository::getStatusList()
         ]);
     }
 
@@ -87,11 +88,11 @@ class TaskController extends Controller
 
         return $this->render('form', [
             'model' => $model,
-            'projects' => Project::getList(),
-            'types' => TaskType::getList(),
-            'users' => User::getList(),
-            'priorities' => Task::getPriorityList(),
-            'statuses' => Task::getStatusList()
+            'projects' => ProjectRepository::getList(),
+            'types' => TaskTypeRepository::getList(),
+            'users' => UserRepository::getList(),
+            'priorities' => TaskRepository::getPriorityList(),
+            'statuses' => TaskRepository::getStatusList()
         ]);
     }
 
@@ -112,11 +113,11 @@ class TaskController extends Controller
 
         return $this->render('form', [
             'model' => $model,
-            'projects' => Project::getList(),
-            'types' => TaskType::getList(),
-            'users' => User::getList(),
-            'priorities' => Task::getPriorityList(),
-            'statuses' => Task::getStatusList()
+            'projects' => ProjectRepository::getList(),
+            'types' => TaskTypeRepository::getList(),
+            'users' => UserRepository::getList(),
+            'priorities' => TaskRepository::getPriorityList(),
+            'statuses' => TaskRepository::getStatusList()
         ]);
     }
 

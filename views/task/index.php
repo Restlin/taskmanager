@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use app\helpers\UserHelper;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\TaskSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -23,13 +24,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Создать задачу', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php Pjax::begin(); ?>    
+    <?php Pjax::begin(); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'columns' => [            
-
+        'columns' => [
             'id',
             [
                 'attribute' => 'projectId',
@@ -42,8 +42,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'typeId',
                 'value' => function(app\models\Task $model) {
                     return $model->type->name;
-                }
-            ],            
+                },
+                'filter' => $types
+            ],
             [
                 'attribute' => 'priority',
                 'value' => function(app\models\Task $model)  use($priorities) {
@@ -51,34 +52,39 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'filter' => $priorities
             ],
+            'name',
             [
                 'attribute' => 'authorId',
                 'value' => function(app\models\Task $model) {
-                    return $model->author->surname.' '.$model->author->name;
+                    return UserHelper::fio($model->author);
                 },
                 'filter' => $users,
             ],
             [
                 'attribute' => 'executorId',
                 'value' => function(app\models\Task $model) {
-                    return $model->executor->surname.' '.$model->executor->name;
+                    return UserHelper::fio($model->executor);
                 },
                 'filter' => $users,
-            ],       
+            ],
             [
                 'attribute' => 'status',
                 'value' => function(app\models\Task $model) use ($statuses) {
-                    return $statuses[$model->status];                    
+                    return $statuses[$model->status];
                 },
                 'filter' => $statuses
-            ],            
-            'name',
-            'dateStart',
-            'content',
+            ],
+            'dateStart:datetime',
             'dateEnd',
-            'dateLimit',
+            [
+                'attribute' => 'dateLimit',
+                'format' => 'date',
+            ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'header' => 'Действия',
+                'class' => 'yii\grid\ActionColumn'
+            ],
         ],
     ]); ?>
 

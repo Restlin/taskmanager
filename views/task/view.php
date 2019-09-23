@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\helpers\UserHelper;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Task */
@@ -48,21 +49,21 @@ $this->params['breadcrumbs'][] = $this->title;
             ],            
             [
                 'attribute' => 'authorId',
-                'value' => $model->author->surname.' '.$model->author->name,
+                'value' => UserHelper::fio($model->author),
             ],
             [
                 'attribute' => 'executorId',
-                'value' => $model->executor->surname.' '.$model->executor->name,
+                'value' => UserHelper::fio($model->executor),
             ],
             [
                 'attribute' => 'status',
                 'value' => $statuses[$model->status],
             ],
             'name',
-            'dateStart',
+            'dateStart:datetime',
             'content',
-            'dateEnd',
-            'dateLimit',
+            'dateEnd:datetime',
+            'dateLimit:date',
         ],
     ]) ?>
 
