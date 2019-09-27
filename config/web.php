@@ -22,8 +22,15 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        'formatter' => [
+            'datetimeFormat' => 'php:d.m.Y H:i:s',
+            'timeFormat' => 'php:H:i:s',
+            'dateFormat' => 'php:d.m.Y',
+            'defaultTimeZone' => 'Europe/Samara',
+            'booleanFormat' => ['✘', '✔'],
+        ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'app\models\UserIdentity',
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [

@@ -11,19 +11,30 @@ use app\repositories\TaskTypeRepository;
 use app\repositories\ProjectRepository;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use app\services\TaskService;
 
 /**
  * TaskController implements the CRUD actions for Task model.
  */
-class TaskController extends Controller
-{
+class TaskController extends Controller {
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [                        
+                        'allow' => true,                        
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -37,19 +48,18 @@ class TaskController extends Controller
      * Lists all Task models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new TaskSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'projects' => ProjectRepository::getList(),
-            'types' => TaskTypeRepository::getList(),
-            'users' => UserRepository::getList(),
-            'priorities' => TaskRepository::getPriorityList(),
-            'statuses' => TaskRepository::getStatusList()
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+                    'projects' => ProjectRepository::getList(),
+                    'types' => TaskTypeRepository::getList(),
+                    'users' => UserRepository::getList(),
+                    'priorities' => TaskRepository::getPriorityList(),
+                    'statuses' => TaskRepository::getStatusList()
         ]);
     }
 
@@ -59,15 +69,27 @@ class TaskController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
+        $task = $this->findModel($id);
+        $user = Yii::$app->user;
+
+        $isAuthor = TaskService::isAuthor($task, $user);
+        $isExecutor = TaskService::isExecutor($task, $user);
+        if (!$isAuthor && !$isExecutor) {
+            throw new ForbiddenHttpException('Вы не имеете доступа к этой задаче!');
+        }
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
-            'projects' => ProjectRepository::getList(),
-            'types' => TaskTypeRepository::getList(),
-            'users' => UserRepository::getList(),
-            'priorities' => TaskRepository::getPriorityList(),
-            'statuses' => TaskRepository::getStatusList()
+                    'model' => $task,
+                    'projects' => ProjectRepository::getList(),
+                    'types' => TaskTypeRepository::getList(),
+                    'users' => UserRepository::getList(),
+                    'priorities' => TaskRepository::getPriorityList(),
+                    'statuses' => TaskRepository::getStatusList(),
+                    'canTakeToWork' => TaskService::canTakeToWork($task, $user),
+                    'canReady' => TaskService::canReady($task, $user),
+                    'canDone' => TaskService::canDone($task, $user),
+                    'canEdit' => TaskService::canEdit($task, $user),
         ]);
     }
 
@@ -76,23 +98,23 @@ class TaskController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Task();
         $model->authorId = Yii::$app->user->getId();
         $model->dateStart = date('Y-m-d H:i:s');
+        $model->status = TaskRepository::STATUS_WAIT;
+        $model->priority = TaskRepository::PRIORITY_NORMAL;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('form', [
-            'model' => $model,
-            'projects' => ProjectRepository::getList(),
-            'types' => TaskTypeRepository::getList(),
-            'users' => UserRepository::getList(),
-            'priorities' => TaskRepository::getPriorityList(),
-            'statuses' => TaskRepository::getStatusList()
+                    'model' => $model,
+                    'projects' => ProjectRepository::getList(),
+                    'types' => TaskTypeRepository::getList(),
+                    'users' => UserRepository::getList(),
+                    'priorities' => TaskRepository::getPriorityList(),
         ]);
     }
 
@@ -103,22 +125,68 @@ class TaskController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
+        if (!TaskService::canEdit($model, Yii::$app->user)) {
+            throw new ForbiddenHttpException('Вы не можете изменять эту задачу!');
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('form', [
-            'model' => $model,
-            'projects' => ProjectRepository::getList(),
-            'types' => TaskTypeRepository::getList(),
-            'users' => UserRepository::getList(),
-            'priorities' => TaskRepository::getPriorityList(),
-            'statuses' => TaskRepository::getStatusList()
+                    'model' => $model,
+                    'projects' => ProjectRepository::getList(),
+                    'types' => TaskTypeRepository::getList(),
+                    'users' => UserRepository::getList(),
+                    'priorities' => TaskRepository::getPriorityList(),
         ]);
+    }
+
+    /**
+     * Взять задачу в работу
+     * @param int $id ИД задачи
+     * @return mixed
+     */
+    public function actionWork($id) {
+        $model = $this->findModel($id);
+
+        if (!TaskService::canTakeToWork($model, Yii::$app->user)) {
+            throw new ForbiddenHttpException('Вы не являетесь исполнителем этой задачи!');
+        }
+        TaskService::takeToWork($model);
+        return $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    /**
+     * Отметить задачу готовой для проверки
+     * @param int $id ИД задачи
+     * @return mixed
+     */
+    public function actionReady($id) {
+        $model = $this->findModel($id);
+
+        if (!TaskService::canReady($model, Yii::$app->user)) {
+            throw new ForbiddenHttpException('Вы не являетесь исполнителем этой задачи!');
+        }
+        TaskService::readyTask($model);
+        return $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    /**
+     * Выполнение задачи
+     * @param int $id ИД задачи
+     * @return mixed
+     */
+    public function actionDone($id) {
+        $model = $this->findModel($id);
+
+        if (!TaskService::canDone($model, Yii::$app->user)) {
+            throw new ForbiddenHttpException('Вы не являетесь автором этой задачи!');
+        }
+        TaskService::doneTask($model);
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
@@ -128,9 +196,12 @@ class TaskController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    public function actionDelete($id) {
+        $model = $this->findModel($id);
+        if (!TaskService::canEdit($model, Yii::$app->user)) {
+            throw new ForbiddenHttpException('Вы не можете удалять эту задачу!');
+        }
+        $model->delete();
 
         return $this->redirect(['index']);
     }
@@ -142,12 +213,12 @@ class TaskController extends Controller
      * @return Task the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Task::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }

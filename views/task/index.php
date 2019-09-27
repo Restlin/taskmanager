@@ -30,61 +30,58 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'id',
             [
-                'attribute' => 'projectId',
+                'attribute' => 'id',
+                'label' => 'Проект/№',
                 'value' => function(app\models\Task $model) {
-                    return $model->project->name;
+                    return $model->project->name."\n№ ".$model->id;                    
                 },
-                'filter' => $projects
+                'filter' => Html::activeDropDownList($searchModel, 'projectId', $projects, ['prompt' => 'Проект', 'class' => 'form-control']).
+                            Html::activeTextInput($searchModel, 'id', ['placeholder' => 'Код задачи', 'class' => 'form-control']),
+                'format' => 'ntext'
             ],
             [
                 'attribute' => 'typeId',
-                'value' => function(app\models\Task $model) {
-                    return $model->type->name;
+                'label' => 'Тип/Приоритет',
+                'value' => function(app\models\Task $model) use($priorities) {
+                    return $priorities[$model->priority].":\n".$model->type->name;
                 },
-                'filter' => $types
+                'filter' => Html::activeDropDownList($searchModel, 'typeId', $types, ['prompt' => 'Тип задачи', 'class' => 'form-control']).
+                            Html::activeDropDownList($searchModel, 'priority', $priorities, ['prompt' => 'Приоритет', 'class' => 'form-control']),
+                'format' => 'ntext'
             ],
             [
-                'attribute' => 'priority',
-                'value' => function(app\models\Task $model)  use($priorities) {
-                    return $priorities[$model->priority];
-                },
-                'filter' => $priorities
-            ],
-            'name',
-            [
-                'attribute' => 'authorId',
+                'attribute' => 'name',
+                'label' => 'Название/Автор',
                 'value' => function(app\models\Task $model) {
-                    return UserHelper::fio($model->author);
+                    return Html::a($model->name, ['view', 'id' => $model->id])."<br>(".UserHelper::fio($model->author).")";
                 },
-                'filter' => $users,
+                'format' => 'raw',
+                'filter' => Html::activeTextInput($searchModel, 'name', ['placeholder' => 'Название', 'class' => 'form-control']).
+                        Html::activeDropDownList($searchModel, 'authorId', $users, ['prompt' => 'Автор', 'class' => 'form-control']),
             ],
             [
                 'attribute' => 'executorId',
-                'value' => function(app\models\Task $model) {
-                    return UserHelper::fio($model->executor);
-                },
-                'filter' => $users,
-            ],
-            [
-                'attribute' => 'status',
+                'label' => 'Статус/Исполнитель',
                 'value' => function(app\models\Task $model) use ($statuses) {
-                    return $statuses[$model->status];
+                    return $statuses[$model->status]."\n(".UserHelper::fio($model->executor).")";
                 },
-                'filter' => $statuses
+                'format' => 'ntext',
+                'filter' => Html::activeDropDownList($searchModel, 'status', $statuses, ['prompt' => 'Статус', 'class' => 'form-control']).
+                            Html::activeDropDownList($searchModel, 'executorId', $users, ['prompt' => 'Исполнитель', 'class' => 'form-control']),
             ],
             'dateStart:datetime',
-            'dateEnd',
+            'dateEnd:datetime',
             [
                 'attribute' => 'dateLimit',
                 'format' => 'date',
-            ],
-
-            [
-                'header' => 'Действия',
-                'class' => 'yii\grid\ActionColumn'
-            ],
+                'contentOptions' => function(app\models\Task $model) {
+                    $now = new DateTime();
+                    $dateLimit = new DateTime($model->dateLimit);
+                    $isOutDate = $now > $dateLimit;
+                    return $isOutDate ? ['class' => 'text-danger', 'title' => 'Задание просрочено!'] : [];
+                }
+            ],            
         ],
     ]); ?>
 

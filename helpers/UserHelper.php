@@ -13,6 +13,9 @@ class UserHelper {
      * @return string
      */
     public static function fio(User $user): string {
-        return mb_substr($user->name, 0, 1, 'UTF-8').'. '.$user->surname;
+        if(!$user->name || !$user->surname) {
+            return '';            
+        }
+        return mb_substr($user->name, 0, 1, 'UTF-8').'. '.$user->surname;                
     }
 }

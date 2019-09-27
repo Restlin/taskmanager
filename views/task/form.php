@@ -30,9 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $form->field($model, 'priority')->dropDownList($priorities) ?>        
 
-        <?= $form->field($model, 'executorId')->dropDownList($users) ?>
-
-        <?= $form->field($model, 'status')->dropDownList($statuses) ?>
+        <?= $form->field($model, 'executorId')->dropDownList($users) ?>        
 
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>        
 
