@@ -33,7 +33,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     return UserHelper::fio($user);
                 }
             ],
-            'password',            
             [
                 'header' => 'Действия',
                 'class' => 'yii\grid\ActionColumn'

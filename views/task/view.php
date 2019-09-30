@@ -75,6 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'dateStart:datetime',
             'content',
+            'comment',
             'dateEnd:datetime',
             'dateLimit:date',
         ],

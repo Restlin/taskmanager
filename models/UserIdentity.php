@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+use Yii;
 
 /**
  * Класс идентификации пользователя
@@ -56,6 +57,6 @@ class UserIdentity extends User implements \yii\web\IdentityInterface {
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return Yii::$app->getSecurity()->validatePassword($password, $this->password);
     }    
 }

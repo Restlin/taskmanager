@@ -23,10 +23,12 @@ class TaskService {
     /**
      * Отметить задачу готовой
      * @param Task $task задача
+     * @param string $comment комментарий исполнителя
      * @return bool
      */
-    static public function readyTask(Task $task): bool {
-        $task->status = TaskRepository::STATUS_READY;        
+    static public function readyTask(Task $task, ?string $comment): bool {
+        $task->status = TaskRepository::STATUS_READY;
+        $task->comment = $comment;
         return $task->save();
     }
     /**

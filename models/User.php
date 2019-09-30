@@ -1,5 +1,4 @@
 <?php
-
 namespace app\models;
 
 use Yii;
@@ -9,7 +8,7 @@ use Yii;
  *
  * @property int $id идентификатор
  * @property string $email адрес email
- * @property string $password пароль
+ * @property string $password хеш пароля
  * @property string $surname фамилия
  * @property string $name имя
  * @property string $patronymic отчество
@@ -39,6 +38,15 @@ class User extends \yii\db\ActiveRecord
             [['surname', 'name', 'patronymic'], 'string', 'max' => 50],
             [['email'], 'unique'],
         ];
+    }
+    /**
+     * Обработка перед сохранением
+     * @param bool $insert признак вставки
+     * @return bool
+     */
+    public function beforeSave($insert) {
+        $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+        return parent::beforeSave($insert);
     }
 
     /**

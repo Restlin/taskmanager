@@ -20,6 +20,7 @@ use Yii;
  * @property string $content содержимое
  * @property string $dateEnd дата конца
  * @property string $dateLimit контрольная дата
+ * @property string $comment комментарий
  *
  * @property User $author автор
  * @property User $executor исполнитель
@@ -46,6 +47,7 @@ class Task extends \yii\db\ActiveRecord
             [['projectId', 'typeId', 'priority', 'authorId', 'executorId', 'status'], 'integer'],
             [['dateStart', 'dateEnd', 'dateLimit'], 'safe'],
             [['name'], 'string', 'max' => 100],
+            [['comment'], 'string', 'max' => 1000],
             [['content'], 'string', 'max' => 2000],
             [['authorId'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['authorId' => 'id']],
             [['executorId'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executorId' => 'id']],
@@ -72,6 +74,7 @@ class Task extends \yii\db\ActiveRecord
             'name' => 'Название',
             'dateStart' => 'Начало',
             'content' => 'Содержимое',
+            'comment' => 'Комментарий исполнителя',
             'dateEnd' => 'Конец',
             'dateLimit' => 'Срок',
         ];

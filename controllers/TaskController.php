@@ -70,7 +70,7 @@ class TaskController extends Controller {
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id) {
-        $task = $this->findModel($id);
+        $task = $this->findModel($id);      
         $user = Yii::$app->user;
 
         $isAuthor = TaskService::isAuthor($task, $user);
@@ -170,8 +170,16 @@ class TaskController extends Controller {
         if (!TaskService::canReady($model, Yii::$app->user)) {
             throw new ForbiddenHttpException('Вы не являетесь исполнителем этой задачи!');
         }
-        TaskService::readyTask($model);
-        return $this->redirect(['view', 'id' => $model->id]);
+        $comment = Yii::$app->request->post('Task[comment]');
+        
+        if ($comment && TaskService::readyTask($model, $comment)) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('ready', [
+            'model' => $model
+        ]);
+        
     }
 
     /**
