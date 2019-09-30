@@ -3,7 +3,6 @@
 namespace app\services;
 use app\models\Task;
 use app\repositories\TaskRepository;
-use yii\web\ForbiddenHttpException;
 
 /**
  * Сервис по работе с заданиями
