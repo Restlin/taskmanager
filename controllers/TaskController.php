@@ -153,7 +153,7 @@ class TaskController extends Controller {
     public function actionStartWork($id) {
         $model = $this->findModel($id);
 
-        if (!TaskService::canStartWork($model, Yii::$app->user)) {
+        if (!TaskService::canStartWork($model, Yii::$app->user->getIdentity())) {
             throw new ForbiddenHttpException('Вы не являетесь исполнителем этой задачи!');
         }
         TaskService::startWork($model);
@@ -168,7 +168,7 @@ class TaskController extends Controller {
     public function actionReady($id) {
         $model = $this->findModel($id);
 
-        if (!TaskService::canReady($model, Yii::$app->user)) {
+        if (!TaskService::canReady($model, Yii::$app->user->getIdentity())) {
             throw new ForbiddenHttpException('Вы не являетесь исполнителем этой задачи!');
         }
         $attributes = Yii::$app->request->post('Task');
@@ -191,7 +191,7 @@ class TaskController extends Controller {
     public function actionDone($id) {
         $model = $this->findModel($id);
 
-        if (!TaskService::canDone($model, Yii::$app->user)) {
+        if (!TaskService::canDone($model, Yii::$app->user->getIdentity())) {
             throw new ForbiddenHttpException('Вы не являетесь автором этой задачи!');
         }
         TaskService::doneTask($model);
@@ -207,7 +207,7 @@ class TaskController extends Controller {
      */
     public function actionDelete($id) {
         $model = $this->findModel($id);
-        if (!TaskService::canEdit($model, Yii::$app->user)) {
+        if (!TaskService::canEdit($model, Yii::$app->user->getIdentity())) {
             throw new ForbiddenHttpException('Вы не можете удалять эту задачу!');
         }
         $model->delete();
