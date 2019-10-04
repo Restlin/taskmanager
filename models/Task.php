@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\repositories\TaskRepository;
+use app\services\TaskService;
 use Yii;
 
 /**
@@ -56,6 +57,15 @@ class Task extends \yii\db\ActiveRecord
             [['priority'], 'in', 'range' => array_keys(TaskRepository::getPriorityList())],
             [['status'], 'in', 'range' => array_keys(TaskRepository::getStatusList())],
         ];
+    }
+    /**
+     * обработка после сохраенния
+     * @param bool $insert признак вставки
+     * @param array $changedAttributes измененые атрибуты
+     */
+    public function afterSave($insert, $changedAttributes) {
+        parent::afterSave($insert, $changedAttributes);
+        TaskService::afterTaskSave($this); //@todo перейти на event подключение
     }
 
     /**

@@ -22,4 +22,11 @@ class UserRepository {
         }
         return $list;
     }
+    /**
+     * Получить всех пользователей
+     * @return User[]
+     */
+    public static function findAll(): array {
+        return User::find()->orderBy('id')->all();
+    }
 }

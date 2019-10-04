@@ -71,13 +71,14 @@ class TaskController extends Controller {
      */
     public function actionView($id) {
         $task = $this->findModel($id);      
-        $user = Yii::$app->user;
+        $user = Yii::$app->user->getIdentity();
 
         $isAuthor = TaskService::isAuthor($task, $user);
         $isExecutor = TaskService::isExecutor($task, $user);
         if (!$isAuthor && !$isExecutor) {
             throw new ForbiddenHttpException('Вы не имеете доступа к этой задаче!');
         }
+        TaskService::setViewTask($task, $user);
 
         return $this->render('view', [
                     'model' => $task,
@@ -86,7 +87,7 @@ class TaskController extends Controller {
                     'users' => UserRepository::getList(),
                     'priorities' => TaskRepository::getPriorityList(),
                     'statuses' => TaskRepository::getStatusList(),
-                    'canTakeToWork' => TaskService::canTakeToWork($task, $user),
+                    'canStartWork' => TaskService::canStartWork($task, $user),
                     'canReady' => TaskService::canReady($task, $user),
                     'canDone' => TaskService::canDone($task, $user),
                     'canEdit' => TaskService::canEdit($task, $user),
@@ -149,13 +150,13 @@ class TaskController extends Controller {
      * @param int $id ИД задачи
      * @return mixed
      */
-    public function actionWork($id) {
+    public function actionStartWork($id) {
         $model = $this->findModel($id);
 
-        if (!TaskService::canTakeToWork($model, Yii::$app->user)) {
+        if (!TaskService::canStartWork($model, Yii::$app->user)) {
             throw new ForbiddenHttpException('Вы не являетесь исполнителем этой задачи!');
         }
-        TaskService::takeToWork($model);
+        TaskService::startWork($model);
         return $this->redirect(['view', 'id' => $model->id]);
     }
 
@@ -170,9 +171,9 @@ class TaskController extends Controller {
         if (!TaskService::canReady($model, Yii::$app->user)) {
             throw new ForbiddenHttpException('Вы не являетесь исполнителем этой задачи!');
         }
-        $comment = Yii::$app->request->post('Task[comment]');
+        $attributes = Yii::$app->request->post('Task');
         
-        if ($comment && TaskService::readyTask($model, $comment)) {
+        if ($attributes && TaskService::readyTask($model, $attributes['comment'])) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

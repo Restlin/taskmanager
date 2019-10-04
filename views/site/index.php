@@ -9,6 +9,7 @@ $this->title = 'My Yii Application';
     <div class="jumbotron">
         <h1>Мой супер менеджер задач!</h1>       
     </div>
+    <p><?= Html::a('Уведомления', ['notice/'], ['class' => 'btn btn-lg btn-success']); ?></p>
     <p><?= Html::a('Типы задач', ['task-type/'], ['class' => 'btn btn-lg btn-success']); ?></p>
     <p><?= Html::a('Проекты', ['project/'], ['class' => 'btn btn-lg btn-success']); ?></p>
     <p><?= Html::a('Пользователи', ['user/'], ['class' => 'btn btn-lg btn-success']); ?></p>

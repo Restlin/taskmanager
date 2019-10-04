@@ -13,8 +13,9 @@ use Yii;
  * @property string $name имя
  * @property string $patronymic отчество
  *
- * @property Task[] $tasks
- * @property Task[] $tasks0
+ * @property Task[] $authorTasks задачи автора
+ * @property Task[] $executorTasks задачи исполнителя
+ * @Property Notice[] $notices уведомления
  */
 class User extends \yii\db\ActiveRecord
 {
@@ -67,17 +68,24 @@ class User extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTasks()
+    public function getAuthorTasks()
     {
-        return $this->hasMany(Task::className(), ['authorId' => 'id']);
+        return $this->hasMany(Task::class, ['authorId' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getTasks0()
+    public function getExecutorTasks()
     {
-        return $this->hasMany(Task::className(), ['executorId' => 'id']);
+        return $this->hasMany(Task::class, ['executorId' => 'id']);
     }    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotices()
+    {
+        return $this->hasMany(Notice::class, ['userId' => 'id']);
+    }
     
 }

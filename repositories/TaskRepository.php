@@ -1,6 +1,8 @@
 <?php
 namespace app\repositories;
 
+use app\models\Task;
+
 /**
  * Репозиторий по работе с задачами
  *
@@ -40,6 +42,22 @@ class TaskRepository {
      */
     const STATUS_REJECT = 4;
     /**
+     * Установлен исполнитель задачи
+     */
+    const EVENT_SET_EXECUTOR = 'task_set_executor';
+    /**
+     * Задача взята в работу
+     */
+    const EVENT_START_WORK = 'task_start_work';
+    /**
+     * Задача готова к проверке
+     */
+    const EVENT_READY = 'task_ready';
+    /**
+     * Задача выполнена
+     */
+    const EVENT_DONE = 'task_done';
+    /**
      * Получить перечень приорететов
      * @return array
      */
@@ -62,5 +80,25 @@ class TaskRepository {
             self::STATUS_DONE => 'Выполнен',
             self::STATUS_REJECT => 'Отказ',
         ];
+    }
+    /**
+     * Получить перечень описаний событий
+     * @return array
+     */
+    public static function getEventList(): array {
+        return [
+            self::EVENT_SET_EXECUTOR => 'Вам направлена новая задача',
+            self::EVENT_START_WORK => 'Задачу взяли в работу',
+            self::EVENT_READY => 'Задача готова к проверке',
+            self::EVENT_DONE => 'Задача завершена',
+        ];
+    }
+    /**
+     * Найти задание по ИД
+     * @param int $id ИД задания
+     * @return Task
+     */
+    public static function findOne($id): Task {
+        return Task::findOne($id);
     }
 }

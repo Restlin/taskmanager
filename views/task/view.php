@@ -11,7 +11,7 @@ use app\helpers\UserHelper;
 /* @var $users array */
 /* @var $priorities array */
 /* @var $statuses array */
-/* @var $canTakeToWork bool */
+/* @var $canStartWork bool */
 /* @var $canReady bool */
 /* @var $canDone bool */
 /* @var $canEdit bool */
@@ -27,8 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php 
-            if($canTakeToWork) {
-              echo Html::a('Взять в работу', ['work', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            if($canStartWork) {
+              echo Html::a('Взять в работу', ['start-work', 'id' => $model->id], ['class' => 'btn btn-primary']);
             } elseif($canReady) {
               echo Html::a('Отметить готовой', ['ready', 'id' => $model->id], ['class' => 'btn btn-primary']);
             } elseif($canDone) {
